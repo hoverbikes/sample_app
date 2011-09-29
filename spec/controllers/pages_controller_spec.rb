@@ -34,7 +34,8 @@ describe PagesController do
     it "should have the right title" do
       get 'contact'
           response.should have_selector("title",
-                                        :content => "#{@base_title} | Contact")    end
+                                        :content => "#{@base_title} | Contact")
+    end
     it "should have a non-blank body" do
       get 'home'
       response.body.should_not =~ /<body>\s*<\/body>/
@@ -50,7 +51,8 @@ describe PagesController do
     it "should have the right title" do
       get 'about'
           response.should have_selector("title",
-                                        :content => "#{@base_title} | About")    end
+                                        :content => "#{@base_title} | About")    
+    end
     it "should have a non-blank body" do
       get 'home'
       response.body.should_not =~ /<body>\s*<\/body>/
