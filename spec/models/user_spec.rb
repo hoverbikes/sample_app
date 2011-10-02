@@ -83,11 +83,11 @@ describe User do
       hash= @attr.merge(:password => short, :password_confirmation => short)
       User.new(hash).should_not be_valid
     end
-     it "should reject long passwords" do
-        long = "a" * 41
-        hash= @attr.merge(:password => long, :password_confirmation => long)
-        User.new(hash).should_not be_valid
-      end
+    it "should reject long passwords" do
+      long = "a" * 41
+      hash= @attr.merge(:password => long, :password_confirmation => long)
+      User.new(hash).should_not be_valid
+    end
   end
   
   describe "password encryption" do
@@ -99,8 +99,44 @@ describe User do
       @user.should respond_to(:encrypted_password)
     end
     
-  end
-end
+    it "should set the encrypted password attribute" do
+      @user.should_not be_blank
+    end
+    
+    it "should have a salt" do
+      @user.should respond_to(:salt)
+    end
+    
+    describe "has_password? method" do
+      it "should exist" do
+        @user.should respond_to(:has_password?)
+      end
+      
+      it "should return true if passwords match" do
+        @user.has_password?(@attr[:password]).should be_true
+      end
+      it "should return false if passwords do not match" do
+        @user.has_password?("invalid").should be_false
+      end
+    end #describe "has_password? method"
+    
+    describe "authenticate method" do
+      it "should return nil on email/password missmatch" do
+        User.authenticate(@attr[:email], "wrongpass").should be_nil
+      end
+      it "should exist" do
+        User.should respond_to(:authenticate)
+      end
+      it "should return nil for email address with no user" do
+        User.authenticate("bar@foo.com", @attr[:password]).should be_nil
+      end
+      it "should return the user on email/password match" do
+        User.authenticate(@attr[:email], @attr[:password]).should == @user
+      end
+    end #describe "authenticate method" 
+  end #describe "password encryption"
+end #describe User
+
 # == Schema Information
 #
 # Table name: users
