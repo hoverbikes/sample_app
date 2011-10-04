@@ -35,10 +35,7 @@ describe UsersController do
       response.should have_selector('td>a', :content => user_path(@user),
                                            :href    => user_path(@user))
     end
-    
-    
-    
-  end
+  end #describe GET 'show'
   
   describe "GET 'new'" do
     it "should be successful" do
@@ -49,6 +46,6 @@ describe UsersController do
       get :new
       response.should have_selector('title', :content => "Sign Up")
     end
-  end
+  end #describe GET 'new'
 
 end
