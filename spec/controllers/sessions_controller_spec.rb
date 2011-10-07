@@ -49,7 +49,14 @@ render_views
       end
     end #describing success
   end #describe POST create
-  
-  
-  
+  describe "POST 'destroy'" do
+    it "should sign a user out" do
+      test_sign_in(Factory(:user))
+      delete :destroy
+      controller.should_not be_signed_in
+      response.should redirect_to(root_path)
+    end
+    
+  end #describe POST destroy
+
 end
