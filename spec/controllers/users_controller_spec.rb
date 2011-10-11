@@ -95,6 +95,7 @@ describe UsersController do
       end
     end #describe "success"
   end #describe POST 'create'
+  
   describe "GET 'edit'" do
     before(:each) do
       @user = Factory(:user)
@@ -113,6 +114,7 @@ describe UsersController do
       response.should have_selector('a', :href => 'http://gravatar.com/emails', :content => "change")
     end
   end# GET edit
+  
   describe "PUT 'update'" do
     before(:each) do
       @user = Factory(:user)
@@ -131,6 +133,7 @@ describe UsersController do
           response.should have_selector('title', :content => "Edit User")
         end
       end #PUT update failure
+      
       describe "success" do
         before(:each) do
           @attr = {:name => "New Name", :email => "user@example.org",
@@ -150,6 +153,20 @@ describe UsersController do
         end
       end #PUT update success
   end #PUT update
-  
+      
+    describe "authentication of edit/update actions" do
+      before(:each) do
+        @user = Factory(:user)
+      end
+      it "should deny access to 'edit'" do
+        get :edit, :id => @user
+        response.should redirect_to(signin_path)
+        flash[:notice].should =~ /sign in/i
+      end
+      it "should deny access to 'update'" do
+        get :edit, :id => @user, :user => {}
+        response.should redirect_to(signin_path)
+      end
+    end #authentication block
   
 end
