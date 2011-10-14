@@ -3,6 +3,7 @@ require 'spec_helper'
 describe UsersController do
   
   render_views
+  
   describe "GET 'index'" do
     describe "for non-signed-in users" do
       it "should deny access" do
@@ -208,44 +209,44 @@ describe UsersController do
         end
       end #PUT update success
   end #PUT update
-      
-    describe "authentication of edit/update actions" do
-      
-      before(:each) do
-        @user = Factory(:user)
-      end
-      
-      describe "for non-signed-in users" do
-      
-        it "should deny access to 'edit'" do
-          get :edit, :id => @user
-          response.should redirect_to(signin_path)
-          flash[:notice].should =~ /sign in/i
-        end
-        it "should deny access to 'update'" do
-          get :edit, :id => @user, :user => {}
-          response.should redirect_to(signin_path)
-        end
-      end #for non-signed-in users
-      
-      describe "for signed-in users" do
-      
-        before(:each) do
-          wrong_user = Factory(:user, :email => "wronguser@example.net")
-          test_sign_in(wrong_user)
-        end
-        it "should require matching users for 'edit'" do
-          get :edit, :id => @user
-          response.should redirect_to(root_path)
-        end
-        it "should require matching users for 'update'" do
-          get :update, :id => @user
-          response.should redirect_to(root_path)
-        end  
-      end #for signed-in users
-    end #authentication block (for edit and update)
     
-    describe "DELETE 'destroy'" do
+  describe "authentication of edit/update actions" do
+    
+    before(:each) do
+      @user = Factory(:user)
+    end
+    
+    describe "for non-signed-in users" do
+    
+      it "should deny access to 'edit'" do
+        get :edit, :id => @user
+        response.should redirect_to(signin_path)
+        flash[:notice].should =~ /sign in/i
+      end
+      it "should deny access to 'update'" do
+        get :edit, :id => @user, :user => {}
+        response.should redirect_to(signin_path)
+      end
+    end #for non-signed-in users
+    
+    describe "for signed-in users" do
+    
+      before(:each) do
+        wrong_user = Factory(:user, :email => "wronguser@example.net")
+        test_sign_in(wrong_user)
+      end
+      it "should require matching users for 'edit'" do
+        get :edit, :id => @user
+        response.should redirect_to(root_path)
+      end
+      it "should require matching users for 'update'" do
+        get :update, :id => @user
+        response.should redirect_to(root_path)
+      end  
+    end #for signed-in users
+  end #authentication block (for edit and update)
+  
+  describe "DELETE 'destroy'" do
       before(:each) do
         @user = Factory(:user)
       end
