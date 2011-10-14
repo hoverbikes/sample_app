@@ -43,6 +43,19 @@ describe UsersController do
         response.should have_selector('a', :href => "/users?page=2",
                                            :content => "Next")
       end
+      it "should have delete links for admins" do
+        @user.toggle!(:admin)
+        other_user = User.all.second
+        get :index
+        response.should have_selector('a', :href => user_path(other_user),
+                                           :content => "delete")
+      end
+      it "should not have delete links for non-admins" do
+        other_user = User.all.second
+        get :index
+        response.should_not have_selector('a', :href => user_path(other_user),
+                                           :content => "delete")
+      end
       
     end #signed-in GET index
   end # GET
@@ -221,7 +234,6 @@ describe UsersController do
           wrong_user = Factory(:user, :email => "wronguser@example.net")
           test_sign_in(wrong_user)
         end
-        
         it "should require matching users for 'edit'" do
           get :edit, :id => @user
           response.should redirect_to(root_path)
@@ -232,4 +244,47 @@ describe UsersController do
         end  
       end #for signed-in users
     end #authentication block (for edit and update)
+    
+    describe "DELETE 'destroy'" do
+      before(:each) do
+        @user = Factory(:user)
+      end
+      describe "as non-signed-in user" do
+        it "should deny access" do
+          delete :destroy, :id => @user
+          response.should redirect_to(signin_path)
+        end
+      end #not signed in
+      describe "as non-admin user" do
+        it "should protect the action" do 
+          test_sign_in(@user)
+          delete :destroy, :id => @user
+          response.should redirect_to(root_path)
+        end
+      end #non-admin
+      describe "as an admin" do
+        before(:each) do
+          @admin = Factory(:user, :admin => true)
+          test_sign_in(@admin)
+        end
+        
+        it "should destroy the user" do
+          lambda do
+            delete :destroy, :id => @user 
+          end.should change(User, :count).by(-1)
+        end
+        
+        it "should redirect to the users page" do
+          delete :destroy, :id => @user
+          flash[:success].should =~ /destroyed/i
+          response.should redirect_to(users_path)
+        end
+        
+        it "should not be able to destroy itself" do
+          lambda do
+            delete :destroy, :id => @admin
+          end.should_not change(User, :count)
+        end
+      end #as admin
+    end #DELETE
 end
