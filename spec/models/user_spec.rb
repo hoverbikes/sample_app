@@ -171,7 +171,19 @@ describe User do
         end.should raise_error(ActiveRecord::RecordNotFound)
       end
     end
-    
+    describe "status feed" do
+      it "should have a feed" do
+        @user.should respond_to(:feed)
+      end
+      it "should include the user's microposts" do
+        @user.feed.should include(@mp1)
+        @user.feed.should include(@mp2)
+      end
+      it "should not include a different user's microposts" do
+        mp3 = Factory(:micropost, :user => Factory(:user))
+        @user.feed.should_not include(mp3)
+      end
+    end #status feed
   end #micropost associations
 end #describe User
 
